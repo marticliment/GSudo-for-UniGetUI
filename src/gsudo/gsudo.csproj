@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <Version>1.0.0.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0.0</Version>
     <Deterministic>true</Deterministic>
     <AssemblyName>UniGetUI Elevator</AssemblyName>
     <Authors>Gerardo Grignoli, Martí Climent</Authors>
     <Description>A tweaked version of GSudo designed to be used by UniGetUI</Description>
-    <Copyright>2021 Gerardo Grignoli for GSudo, 2024 Martí Climent for the modifications</Copyright>
+    <Copyright>2021 Gerardo Grignoli for GSudo, 2025 Martí Climent for the modifications</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/marticliment/gsudo-for-UniGetUI</PackageProjectUrl>
     <RepositoryUrl>https://github.com/marticliment/gsudo-for-UniGetUI</RepositoryUrl>
@@ -19,9 +19,8 @@
     <OutputPath>bin\</OutputPath>
     
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <SdkVersion>8.0.401</SdkVersion>
-    <SelfContained>false</SelfContained>
+    <TargetFramework>net9.0</TargetFramework>
+    <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishAot>true</PublishAot>

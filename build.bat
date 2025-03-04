@@ -8,8 +8,8 @@ popd
 
 rmdir /q /s output
 mkdir output
-move "src\gsudo\bin\net8.0\win-x64\publish\UniGetUI Elevator.exe" output\
-move "src\gsudo\bin\net8.0\win-x64\publish\getfilesiginforedist.dll" output\
+move "src\gsudo\bin\net9.0\win-x64\publish\UniGetUI Elevator.exe" output\
+move "src\gsudo\bin\net9.0\win-x64\publish\getfilesiginforedist.dll" output\
 
 %SIGNCOMMAND% "%cd%\output\UniGetUI Elevator.exe"
 
