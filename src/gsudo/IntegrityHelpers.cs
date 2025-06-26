@@ -21,7 +21,8 @@ namespace gsudo
         
         private static readonly string[] RECOGNIZED_PARENT_SUBJECTS = new[]
         {
-            "CN=Marti Climent Lopez, O=Marti Climent Lopez, L=Barcelona, S=Barcelona, C=ES"
+            "CN=Marti Climent Lopez, O=Marti Climent Lopez, L=Barcelona, S=Barcelona, C=ES",
+            "CN=\"Open Source Developer, Martí Climent López\", O=Open Source Developer, L=Barcelona, S=Barcelona, C=ES",
         };
         
         
