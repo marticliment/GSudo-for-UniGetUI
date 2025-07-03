@@ -74,7 +74,34 @@ namespace gsudo.Helpers
         private IList<string> ApplyShellv2(IList<string> args)
         {
             var result = args.ToList();
+            var argc = args.Count;
+
+            if (argc <= 0)
+                throw new ArgumentException("No command-line arguments were provided");
+
             result[0] = ArgumentsHelper.UnQuote(result[0]);
+
+            bool IsFirstValid = result[0].EndsWith(".exe") || File.Exists(result[0]);
+
+            if (!IsFirstValid && argc >= 2 && File.Exists($"{result[0]} {result[1]}"))
+            {
+                result[0] = $"{result[0]} {result[1]}";
+                result.RemoveAt(1);
+            }
+            else if (!IsFirstValid && argc >= 3 && File.Exists($"{result[0]} {result[1]} {result[2]}"))
+            {
+                result[0] = $"{result[0]} {result[1]} {result[2]}";
+                result.RemoveAt(1);
+                result.RemoveAt(1);
+            }
+            else if (!IsFirstValid && argc >= 4 && File.Exists($"{result[0]} {result[1]} {result[2]} {result[3]}"))
+            {
+                result[0] = $"{result[0]} {result[1]} {result[2]} {result[3]}";
+                result.RemoveAt(1);
+                result.RemoveAt(1);
+                result.RemoveAt(1);
+            }
+
             return result;
         }
 
