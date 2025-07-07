@@ -5,3 +5,6 @@ src/global.json
 *settings.user
 output/*
 null
+/src/.vs
+/src/gsudo/Properties
+/src/gsudo/Properties

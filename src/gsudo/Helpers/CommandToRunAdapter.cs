@@ -452,6 +452,11 @@ namespace gsudo.Helpers
 
             if (mustWrap || preCommands.Any() || postCommands.Any())
             {
+                if (command[0].Where(x => x == ' ').Any() && !command[0].StartsWith('"') && !command[0].EndsWith('"'))
+                {
+                    command[0] = $"\"{command[0]}\"";
+                }
+
                 var all = preCommands
                             .Concat(new[] { string.Join(" ", command) })
                             .Concat(postCommands);
