@@ -24,19 +24,22 @@
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 
+    <PublishSingleFile>true</PublishSingleFile>
+
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishAot>true</PublishAot>
     <Optimize>true</Optimize>
     <InvariantGlobalization>true</InvariantGlobalization>
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <IlcGenerateStackTraceData>true</IlcGenerateStackTraceData>
 
     <DefineConstants>$(IntegrityOption)</DefineConstants>
     
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.Security.Extensions" Version="1.3.0" />
+    <PackageReference Include="Microsoft.Security.Extensions" Version="1.4.0" />
     <PackageReference Include="System.Security.Principal.Windows" Version="5.0.0" />
     <PackageReference Include="System.Threading.AccessControl" Version="6.0.0" />
   </ItemGroup>

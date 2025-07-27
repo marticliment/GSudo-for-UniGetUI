@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using gsudo.Helpers;
@@ -60,7 +61,7 @@ namespace gsudo
                     fileHash = sha256.ComputeHash(stream);
 
                 string fileHashString = BitConverter.ToString(fileHash).Replace("-", "").ToLowerInvariant();
-                if (fileHashString != "8ef9bdc46fbd185c0c0ee13cb39a8806e70991281993182d737d011f731526b9")
+                if (fileHashString != "153eefb2eafa8b2b909854cc1f941350efb1170e179a299de8836b8ec5ce6a7a")
                 {
                     Logger.Instance.Log("W_HELPER_DLL_HASH_MISMATCH", LogLevel.Warning);
                     return false;
