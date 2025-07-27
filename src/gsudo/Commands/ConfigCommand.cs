@@ -65,24 +65,11 @@ namespace gsudo.Commands
 
             if (key == null)
             {
-                Console.ForegroundColor = ConsoleColor. Yellow;
-                // print all configs Descriptions
+                // print all configs
                 foreach (var k in Settings.AllKeys)
                 {                    
-                    if (Settings.LogLevel <= LogLevel.Info)
-                    {
-                        Console.WriteLine($"# {k.Value.Name}: {k.Value.Description}");
-                    }
-                }
-                Console.WriteLine();
-                Console.ResetColor();
-
-                // print all config values
-                foreach (var k in Settings.AllKeys)
-                {
-                    var scope = k.Value.HasGlobalValue() ? "(global)" :
+                    var scope = k.Value.HasGlobalValue() ? "(global)" : 
                                     (k.Value.HasLocalValue() ? "(user)" : "(default)");
-
                     Console.WriteLine($"{k.Value.Name} = \"{ k.Value.GetStringValue().ToString()}\" ".PadRight(50) + scope);
                 }
 
@@ -96,11 +83,11 @@ namespace gsudo.Commands
 
             if (value != null && value.Any()) // Write Setting
             {
-                if (value.Any(v => v.In("--global")))
+                /*if (value.Any(v => v.In("--global")))
                 {
                     InputArguments.Global = true;
                     value = value.Where(v => !v.In("--global"));
-                }
+                }*/
 
                 if (value.FirstOrDefault() == "=")
                     value = value.Skip(1);
@@ -118,7 +105,7 @@ namespace gsudo.Commands
                 if (!InputArguments.Global && setting.Scope == RegistrySettingScope.GlobalOnly)
                 {
                     Logger.Instance.Log($"Config Setting for '{setting.Name}' will be set as global system setting.", LogLevel.Info);
-                    InputArguments.Global = true;
+                    // InputArguments.Global = true;
                 }
 
                 if (InputArguments.Global && !SecurityHelper.IsAdministrator())

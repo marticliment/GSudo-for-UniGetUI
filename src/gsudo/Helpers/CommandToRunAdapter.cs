@@ -62,7 +62,7 @@ namespace gsudo.Helpers
                          && (InputArguments.NewWindow || Settings.NewWindow_Force)
                          && (InputArguments.KeepWindowOpen || Settings.NewWindow_CloseBehaviour == AppSettings.CloseBehaviour.PressKeyToClose);
 
-            this.command = ApplyShell(command);
+            this.command = ApplyShellv2(command);
 
             IsWindowsApp = command.Any() && ProcessFactory.IsWindowsApp(command.First());
             /*
@@ -71,7 +71,41 @@ namespace gsudo.Helpers
             */
         }
 
-        private IList<string> ApplyShell(IList<string> args)
+        private IList<string> ApplyShellv2(IList<string> args)
+        {
+            var result = args.ToList();
+            var argc = args.Count;
+
+            if (argc <= 0)
+                throw new ArgumentException("No command-line arguments were provided");
+
+            result[0] = ArgumentsHelper.UnQuote(result[0]);
+
+            bool IsFirstValid = result[0].EndsWith(".exe") || File.Exists(result[0]);
+
+            if (!IsFirstValid && argc >= 2 && File.Exists($"{result[0]} {result[1]}"))
+            {
+                result[0] = $"{result[0]} {result[1]}";
+                result.RemoveAt(1);
+            }
+            else if (!IsFirstValid && argc >= 3 && File.Exists($"{result[0]} {result[1]} {result[2]}"))
+            {
+                result[0] = $"{result[0]} {result[1]} {result[2]}";
+                result.RemoveAt(1);
+                result.RemoveAt(1);
+            }
+            else if (!IsFirstValid && argc >= 4 && File.Exists($"{result[0]} {result[1]} {result[2]} {result[3]}"))
+            {
+                result[0] = $"{result[0]} {result[1]} {result[2]} {result[3]}";
+                result.RemoveAt(1);
+                result.RemoveAt(1);
+                result.RemoveAt(1);
+            }
+
+            return result;
+        }
+
+        /*private IList<string> ApplyShell(IList<string> args)
         {
             var _currentShellFileName = ShellHelper.InvokingShellFullPath;
             var _currentShell = ShellHelper.InvokingShell;
@@ -92,7 +126,7 @@ namespace gsudo.Helpers
                     // https://github.com/PowerShell/PowerShell/pull/10461#event-2959890147
                     // https://github.com/gerardog/gsudo/issues/10
 
-                    /*                 
+                    / *
                     Running ./gsudo from powershell should elevate the current shell, which means:
                         => On PowerShell, run => powershell -NoLogo 
                         => On PowerShellCore => pwsh -NoLogo 
@@ -102,7 +136,7 @@ namespace gsudo.Helpers
                         => On PowerShell => powershell -NoLogo -NoProfile -Command {command} 
                         => On PowerShellCore => pwsh -NoLogo -NoProfile -Command {command}
                         => On PowerShellCore623BuggedGlobalInstall => pwsh {command}
-                     */
+                     * /
 
                     Logger.Instance.Log("Please update to PowerShell Core >= 6.2.4 to avoid profile loading.", LogLevel.Warning);
 
@@ -267,7 +301,7 @@ namespace gsudo.Helpers
                         ArgumentsHelper.Quote(ArgumentsHelper.UnQuote(string.Join(" ", args.ToArray()))) };
                 }
             }
-        }
+        }*/
 
         private void FixCommandExceptions()
         {
@@ -403,15 +437,14 @@ namespace gsudo.Helpers
                 postCommands.Add("exit /b !errl!");
             }
 
-            string startupFolder = InputArguments.StartingDirectory ?? Environment.CurrentDirectory;
-            bool bNetworkfolder = startupFolder.StartsWith(@"\\", StringComparison.Ordinal);
+            bool bNetworkfolder = Environment.CurrentDirectory.StartsWith(@"\\", StringComparison.Ordinal);
             bool bIsCmdExe = ArgumentsHelper.UnQuote(command.First()).EndsWith("cmd.exe", StringComparison.OrdinalIgnoreCase);
 
             if (bNetworkfolder && (bIsCmdExe || mustWrap))
             {
-	            Logger.Instance.Log($"The path '{startupFolder}' is a network folder. Mapping as a network drive.", LogLevel.Debug);
+	            Logger.Instance.Log($"The current directory '{Environment.CurrentDirectory}' is a network folder. Mapping as a network drive.", LogLevel.Debug);
 	            // Prepending PUSHD command. It maps network folders magically!
-	            preCommands.Insert(0, $"pushd \"{startupFolder}\"");
+	            preCommands.Insert(0, $"pushd \"{Environment.CurrentDirectory}\"");
 	            postCommands.Add("popd");
 	            // And set current directory to local folder to avoid CMD warning message
 	            Environment.CurrentDirectory = Environment.GetEnvironmentVariable("SystemRoot");
@@ -419,6 +452,11 @@ namespace gsudo.Helpers
 
             if (mustWrap || preCommands.Any() || postCommands.Any())
             {
+                if (command[0].Where(x => x == ' ').Any() && !command[0].StartsWith('"') && !command[0].EndsWith('"'))
+                {
+                    command[0] = $"\"{command[0]}\"";
+                }
+
                 var all = preCommands
                             .Concat(new[] { string.Join(" ", command) })
                             .Concat(postCommands);

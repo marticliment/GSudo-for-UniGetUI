@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -20,11 +20,10 @@ namespace gsudo.AppSettings
 
     abstract class RegistrySetting
     {
-        protected const string REGKEY = "SOFTWARE\\gsudo";
+        protected const string REGKEY = "SOFTWARE\\unigetui-gsudo";
         public RegistrySettingScope Scope { get; protected set; }
 
         public string Name { get; set; }
-        public string Description { get; set; }
         public abstract void Save(string newValue, bool global);
         public abstract void Reset(bool global);
         public abstract object GetStringValue();
@@ -42,22 +41,17 @@ namespace gsudo.AppSettings
         private readonly Func<string, T> deserializer;
         private readonly Func<T, string> serializer;
 
-        public RegistrySetting(string name, T defaultValue, Func<string, T> deserializer,
-                               RegistrySettingScope scope = RegistrySettingScope.Any,
-                               Func<T, string> serializer = null, string description = null)
+        public RegistrySetting(string name, T defaultValue, Func<string, T> deserializer, RegistrySettingScope scope = RegistrySettingScope.Any, Func<T, string> serializer = null, string description = null)
             : this(name, () => defaultValue, deserializer, scope, serializer, description)
         { }
 
-        public RegistrySetting(string name, Func<T> defaultValue, Func<string, T> deserializer,
-                               RegistrySettingScope scope = RegistrySettingScope.Any,
-                               Func<T, string> serializer = null, string description = null)
+        public RegistrySetting(string name, Func<T> defaultValue, Func<string, T> deserializer, RegistrySettingScope scope = RegistrySettingScope.Any, Func<T,string> serializer = null, string description = null)
         {
             Name = name.Replace('_', '.');
             this.defaultValue = defaultValue;
             this.deserializer = deserializer;
             this.Scope = scope;
             this.serializer = serializer;
-            this.Description = description;
         }
 
         public T Value

@@ -10,13 +10,22 @@ namespace gsudo
         async static Task<int> Main()
         {
             SymbolicLinkSupport.EnableAssemblyLoadFix();
-
             return await Start().ConfigureAwait(false);
         }
 
         private static async Task<int> Start()
         {
             ICommand cmd = null;
+
+
+#if !DEBUG || !DISABLE_INTEGRITY
+            bool PassingIntegrity = IntegrityHelpers.VerifyCallerProcess();
+            if (!PassingIntegrity)
+            {
+                Logger.Instance.Log("The Elevator was not called from a trusted process", LogLevel.Error); // one liner errors.
+                return -1;
+            }
+#endif
 
             var commandLine = ArgumentsHelper.GetRealCommandLine();
             var args = ArgumentsHelper.SplitArgs(commandLine);

@@ -1,10 +1,8 @@
 ﻿using gsudo.AppSettings;
 using gsudo.Commands;
-using gsudo.Native;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Security.Principal;
 
@@ -118,53 +116,35 @@ namespace gsudo.Helpers
             }
             else if (IsOptionMatchWithArgument(argWord, "i", "--integrity", out optionArg))
             {
-                InputArguments.IntegrityLevel = ExtensionMethods.ParseEnum<IntegrityLevel>(optionArg);
+                // InputArguments.IntegrityLevel = ExtensionMethods.ParseEnum<IntegrityLevel>(optionArg);
                 skipRemainingChars = true;
             }
             else if (IsOptionMatchWithArgument(argWord, "u", "--user", out optionArg))
             {
-                InputArguments.SetUserName(optionArg);
+                // InputArguments.SetUserName(optionArg);
                 skipRemainingChars = true;
             }
             else if (match("n", "--new")) { InputArguments.NewWindow = true; }
             else if (match("w", "--wait")) { InputArguments.Wait = true; }
 
-            else if (match(null, "--keepshell")) { InputArguments.KeepShellOpen = true; InputArguments.KeepWindowOpen = false; }
-            else if (match(null, "--keepwindow")) { InputArguments.KeepWindowOpen = true; InputArguments.KeepShellOpen = false; }
-            else if (match(null, "--close")) { InputArguments.CloseNewWindow = true; InputArguments.KeepWindowOpen = false; InputArguments.KeepShellOpen = false; }
+            // else if (match(null, "--keepshell")) { InputArguments.KeepShellOpen = true; InputArguments.KeepWindowOpen = false; }
+            // else if (match(null, "--keepwindow")) { InputArguments.KeepWindowOpen = true; InputArguments.KeepShellOpen = false; }
+            // else if (match(null, "--close")) { InputArguments.CloseNewWindow = true; InputArguments.KeepWindowOpen = false; InputArguments.KeepShellOpen = false; }
 
-            else if (match("s", "--system")) { InputArguments.RunAsSystem = true; }
+            // else if (match("s", "--system")) { InputArguments.RunAsSystem = true; }
+            // else if (match("d", "--direct")) { InputArguments.Direct = true; }
             else if (match("k", "--reset-timestamp")) { InputArguments.KillCache = true; }
-            else if (match(null, "--global")) { InputArguments.Global = true; }
-            else if (match(null, "--ti")) { InputArguments.TrustedInstaller = InputArguments.RunAsSystem = true; }
+            // else if (match(null, "--global")) { InputArguments.Global = true; }
+            // else if (match(null, "--ti")) { InputArguments.TrustedInstaller = InputArguments.RunAsSystem = true; }
             else if (match(null, "--loadProfile")) { Settings.PowerShellLoadProfile.Value = true; }
-            else if (match(null, "--piped")) { Settings.ForcePipedConsole.Value = true; }
-            else if (match(null, "--attached")) { Settings.ForceAttachedConsole.Value = true; }
-            else if (match(null, "--vt")) { Settings.ForceVTConsole.Value = true; }
-            else if (match(null, "--copyEV")) { Settings.CopyEnvironmentVariables.Value = true; }
-            else if (match(null, "--copyNS")) { Settings.CopyNetworkShares.Value = true; }
-            else if (match(null, "--debug")) { Settings.LogLevel.Value = LogLevel.All; InputArguments.Debug = true; }
+            // else if (match(null, "--piped")) { Settings.ForcePipedConsole.Value = true; }
+            // else if (match(null, "--attached")) { Settings.ForceAttachedConsole.Value = true; }
+            // else if (match(null, "--vt")) { Settings.ForceVTConsole.Value = true; }
+            // else if (match(null, "--copyEV")) { Settings.CopyEnvironmentVariables.Value = true; }
+            // else if (match(null, "--copyNS")) { Settings.CopyNetworkShares.Value = true; }
+            else if (match(null, "--debug")) { Settings.LogLevel.Value = LogLevel.All; /*InputArguments.Debug = true;*/ }
             else if (match("v", "--version")) { return new ShowVersionHelpCommand(); }
             else if (match("h", "--help")) return new HelpCommand();
-
-            // ms-sudo compat:
-            else if (match(null, "--preserve-env")) { Settings.CopyEnvironmentVariables.Value = true; }
-            else if (match(null, "--new-window")) { InputArguments.NewWindow = true; }
-            // case sensitive -D {dir}
-            else if (argChar == "D" && argWord == "-D" && FileApi.PathExists(args.FirstOrDefault())) { InputArguments.StartingDirectory = DeQueueArg(); }
-            else if (match(null, "--chdir")) 
-            {
-                InputArguments.StartingDirectory = DeQueueArg().UnQuote();
-                if (!FileApi.PathExists(InputArguments.StartingDirectory))
-                {
-                    throw new ApplicationException($"Invalid directory: {InputArguments.StartingDirectory}");
-                }                
-            }
-            else if (match(null, "--inline")) { InputArguments.NewWindow = false; }
-            else if (argWord.In("--disable-input", "--disableInput")) { InputArguments.DisableInput = true; }
-
-            // rest
-            else if (match("d", "--direct")) { InputArguments.Direct = true; }
             else if (argWord.StartsWith("-", StringComparison.Ordinal))
             {
                 if (argChar != null)
@@ -232,10 +212,12 @@ namespace gsudo.Helpers
                 };
 
             if (arg.In("config"))
-                return new ConfigCommand() { key = args.FirstOrDefault(), value = args.Skip(1) };
+                return new HelpCommand();
+                //return new ConfigCommand() { key = args.FirstOrDefault(), value = args.Skip(1) };
 
             if (arg.In("status"))
-            {
+                return new HelpCommand();
+            /*{
                 var cmd = new StatusCommand();
 
                 while (args.Count>0)
@@ -251,7 +233,7 @@ namespace gsudo.Helpers
                 };
 
                 return cmd;
-            }
+            }*/
 
             if (arg.In("cache"))
             {
@@ -268,15 +250,10 @@ namespace gsudo.Helpers
                         cmd.Action = CacheCommandAction.Help;
                     else if (IsOptionMatchWithArgument(arg, "p", "--pid", out string v))
                     {
-                        cmd.AllowedPid = int.Parse(v, CultureInfo.InvariantCulture);
-                    }
-                    else if (IsOptionMatchWithArgument(arg, "s", "--sid", out v))
-                    {
-                        cmd.AllowedSid = v;
-                    }
-                    else if (IsOptionMatchWithArgument(arg, "u", "--user", out v))
-                    {
-                        InputArguments.SetUserName(v);
+                        int suppliedId = int.Parse(v, CultureInfo.InvariantCulture);
+                        int parentId = IntegrityHelpers.GetParentProcess()?.Id ?? -1;
+                        Logger.Instance.Log($"Using parent process PID ({parentId}) instead of supplied PID ({suppliedId})", LogLevel.Warning);
+                        cmd.AllowedPid = parentId;
                     }
                     else if (IsOptionMatchWithArgument(arg, "d", "--duration", out v))
                     {
@@ -288,6 +265,13 @@ namespace gsudo.Helpers
                         throw new ApplicationException($"Unknown argument: {arg}");
                 }
 
+                if (cmd.AllowedPid is null)
+                {
+                    int parentId = IntegrityHelpers.GetParentProcess()?.Id ?? -1;
+                    Logger.Instance.Log($"Using parent process PID ({parentId}) as no PID was supplied", LogLevel.Warning);
+                    cmd.AllowedPid = parentId;
+                }
+                
                 return cmd;
             }
 

@@ -1,8 +1,5 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:  
-  - name: ❓ Question
-    url: https://github.com/gerardog/gsudo/discussions/new
-    about: Have a question on something? Start a new discussion thread.
-  - name: 🔎 Search previous issues
-    url: https://github.com/gerardog/gsudo/issues
-    about: Please check if your issue has already been reported.
+  - name: All issues should be posted on marticliment/UniGetUI
+    url: https://github.com/marticliment/UniGetUI/issues/new/choose
+    about: Issues on this repo are not regularly checked and may be ignored. Please post them on the UniGetUI repository
