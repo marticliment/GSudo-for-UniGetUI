@@ -6,6 +6,7 @@ This project is a modified version of [gerardog/gsudo](https://github.com/gerard
 > Should you have security concerns or improvement ideas for/about `UniGetUI Elevator`, please let me know by opening an issue or contacting me directly via [this form](https://marticliment.com/contact/).
 
 
+
 ## What this change means:
 The UAC prompts shown to the user will have the UniGetUI name and icon, instead of the generic gsudo.
 
