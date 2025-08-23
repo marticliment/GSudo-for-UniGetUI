@@ -62,7 +62,7 @@ namespace gsudo.Helpers
                          && (InputArguments.NewWindow || Settings.NewWindow_Force)
                          && (InputArguments.KeepWindowOpen || Settings.NewWindow_CloseBehaviour == AppSettings.CloseBehaviour.PressKeyToClose);
 
-            this.command = ApplyShellv2(command);
+            this.command = ApplyShell(command);
 
             IsWindowsApp = command.Any() && ProcessFactory.IsWindowsApp(command.First());
             /*
@@ -71,7 +71,7 @@ namespace gsudo.Helpers
             */
         }
 
-        private IList<string> ApplyShellv2(IList<string> args)
+        /*private IList<string> ApplyShellv2(IList<string> args)
         {
             var result = args.ToList();
             var argc = args.Count;
@@ -103,9 +103,9 @@ namespace gsudo.Helpers
             }
 
             return result;
-        }
+        }*/
 
-        /*private IList<string> ApplyShell(IList<string> args)
+        private IList<string> ApplyShell(IList<string> args)
         {
             var _currentShellFileName = ShellHelper.InvokingShellFullPath;
             var _currentShell = ShellHelper.InvokingShell;
@@ -126,7 +126,7 @@ namespace gsudo.Helpers
                     // https://github.com/PowerShell/PowerShell/pull/10461#event-2959890147
                     // https://github.com/gerardog/gsudo/issues/10
 
-                    / *
+                    /*
                     Running ./gsudo from powershell should elevate the current shell, which means:
                         => On PowerShell, run => powershell -NoLogo 
                         => On PowerShellCore => pwsh -NoLogo 
@@ -136,7 +136,7 @@ namespace gsudo.Helpers
                         => On PowerShell => powershell -NoLogo -NoProfile -Command {command} 
                         => On PowerShellCore => pwsh -NoLogo -NoProfile -Command {command}
                         => On PowerShellCore623BuggedGlobalInstall => pwsh {command}
-                     * /
+                     */
 
                     Logger.Instance.Log("Please update to PowerShell Core >= 6.2.4 to avoid profile loading.", LogLevel.Warning);
 
@@ -301,7 +301,7 @@ namespace gsudo.Helpers
                         ArgumentsHelper.Quote(ArgumentsHelper.UnQuote(string.Join(" ", args.ToArray()))) };
                 }
             }
-        }*/
+        }
 
         private void FixCommandExceptions()
         {
