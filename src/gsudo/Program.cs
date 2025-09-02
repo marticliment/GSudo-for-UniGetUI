@@ -35,6 +35,15 @@ namespace gsudo
                 try
                 {
                     cmd = new CommandLineParser(args).Parse();
+#if DEBUG
+                    if (cmd is ServiceCommand)
+                    {
+                        // Allow debug messages if the debug build is installed
+                        // The official UniGet UI.exe does not set the --debug flag
+                        Settings.LogLevel.Value = LogLevel.All;
+                        InputArguments.Debug = true;
+                    }
+#endif
                 }
                 finally
                 {

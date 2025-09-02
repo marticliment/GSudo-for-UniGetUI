@@ -6,7 +6,7 @@ namespace gsudo
     public static class InputArguments
     {
         // Show debug info
-        public const bool Debug = false;
+        public static bool Debug { get; internal set; } = false;
 
         // Open in new window
         public static bool NewWindow { get; internal set; }

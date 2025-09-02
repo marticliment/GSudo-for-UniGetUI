@@ -187,14 +187,14 @@ namespace gsudo.Helpers
                 else
                 {
                     if (SecurityHelper.IsMemberOfLocalAdmins() && InputArguments.IntegrityLevel >= IntegrityLevel.High)
-                        ret = ProcessFactory.StartElevatedDetached(ownExe, commandLine, !InputArguments.Debug).GetSafeProcessHandle();
+                        ret = ProcessFactory.StartElevatedDetached(ownExe, commandLine, !InputArguments.Debug);
                     else
                         ret = ProcessFactory.StartDetached(ownExe, commandLine, null, !InputArguments.Debug).GetSafeProcessHandle();
                 }
             }
             else
             {
-                ret = ProcessFactory.StartElevatedDetached(ownExe, commandLine, !InputArguments.Debug).GetSafeProcessHandle();
+                ret = ProcessFactory.StartElevatedDetached(ownExe, commandLine, !InputArguments.Debug);
             }
 
             Logger.Instance.Log("Service process started.", LogLevel.Debug);
@@ -236,4 +236,3 @@ namespace gsudo.Helpers
         }
     }
 }
-

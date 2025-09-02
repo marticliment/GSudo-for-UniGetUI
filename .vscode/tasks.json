@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Debug",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["build", "${workspaceFolder}/src/gsudo.sln", "--configuration", "Debug"],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "Build with Debug configuration"
+    },
+    {
+      "label": "Build DebugUnigetFolder",
+      "command": "dotnet",
+      "type": "process",
+      "args": ["build", "${workspaceFolder}/src/gsudo.sln", "--configuration", "DebugUnigetFolder"],
+      "problemMatcher": "$msCompile",
+      "detail": "Builds to C:\\Program Files\\UnigetFolder\\Assets\\Utilities"
+    }
+  ]
+}

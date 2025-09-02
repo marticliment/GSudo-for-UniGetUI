@@ -8,12 +8,12 @@ using System.Security.Principal;
 
 namespace gsudo.Helpers
 {
-    // Why not use a parsing library? 
+    // Why not use a parsing library?
     // When gsudo was built on .Net Framework 4.x, loading the parsing library took significant time at startup.
     // This may no longer be the case on modern .net, but confirming that would require coding and comparing performance.
     public class CommandLineParser
     {
-        LinkedList<string> args;
+        private readonly LinkedList<string> args;
 
         public CommandLineParser(string args)
         {
@@ -35,7 +35,7 @@ namespace gsudo.Helpers
             // syntax: gsudo [options] [verb] [command to run]:
 
             ICommand command = ParseOptions();  // Parse [options]
-            
+
             if (command == null)
                 command = ParseVerb(); // Parse [verb]:
 
@@ -142,7 +142,7 @@ namespace gsudo.Helpers
             // else if (match(null, "--vt")) { Settings.ForceVTConsole.Value = true; }
             // else if (match(null, "--copyEV")) { Settings.CopyEnvironmentVariables.Value = true; }
             // else if (match(null, "--copyNS")) { Settings.CopyNetworkShares.Value = true; }
-            else if (match(null, "--debug")) { Settings.LogLevel.Value = LogLevel.All; /*InputArguments.Debug = true;*/ }
+            else if (match(null, "--debug")) { Settings.LogLevel.Value = LogLevel.All; InputArguments.Debug = true; }
             else if (match("v", "--version")) { return new ShowVersionHelpCommand(); }
             else if (match("h", "--help")) return new HelpCommand();
             else if (argWord.StartsWith("-", StringComparison.Ordinal))
@@ -241,7 +241,7 @@ namespace gsudo.Helpers
                 while (args.Count > 0)
                 {
                     arg = DeQueueArg();
-                        
+
                     if (arg.In("on"))
                         cmd.Action = CacheCommandAction.On;
                     else if (arg.In("off"))
@@ -271,7 +271,7 @@ namespace gsudo.Helpers
                     Logger.Instance.Log($"Using parent process PID ({parentId}) as no PID was supplied", LogLevel.Warning);
                     cmd.AllowedPid = parentId;
                 }
-                
+
                 return cmd;
             }
 

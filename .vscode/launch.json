@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch .NET (Debug)",
+      "type": "coreclr",
+      "preLaunchTask": "Build Debug",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/gsudo/bin/debug/UniGetUI Elevator.exe",
+      "args" : ["--debug", "\"C:\\Users\\a98017094\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe\"", "update", "--id", "JGraph.Draw", "--exact", "--source", "winget", "--accept-source-agreements", "--disable-interactivity", "--silent", "--include-unknown", "--accept-package-agreements", "--force"],
+      //"args": ["--debug", "notepad.exe"],
+      //"args" : ["--debug", "-i", "High", "gsudoelevate", "33404", "S-1-5-21-2503249905-2805853119-2084848213-497198", "Debug", "00:00:00"],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole"
+    }
+  ]
+}

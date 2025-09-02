@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Configurations>Debug;DebugAppFolder;Release</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <AssemblyVersion>1.2.0.0</AssemblyVersion>
     <FileVersion>1.2.0.0</FileVersion>
     <Version>1.2.0.0</Version>
@@ -12,44 +16,71 @@
     <PackageProjectUrl>https://github.com/marticliment/gsudo-for-UniGetUI</PackageProjectUrl>
     <RepositoryUrl>https://github.com/marticliment/gsudo-for-UniGetUI</RepositoryUrl>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    
+
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <NoWarn>1701;1702;CA1303;CA1707;CA1028;CA1001;CA1031;CA1416</NoWarn>
-    <OutputPath>bin\</OutputPath>
-    
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-
-    <PublishSingleFile>true</PublishSingleFile>
-
     <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+    <DefineConstants>$(IntegrityOption)</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Standard Debug configuration -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+      <DebugType>portable</DebugType>
+      <DebugSymbols>true</DebugSymbols>
+      <PublishSingleFile>false</PublishSingleFile>
+      <PublishTrimmed>false</PublishTrimmed>
+      <PublishAot>false</PublishAot>
+      <Optimize>false</Optimize>
+      <DefineConstants>DEBUG;DISABLE_INTEGRITY;$(DefineConstants)</DefineConstants>
+      <OutputPath>bin\Debug\</OutputPath>
+      <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+      <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    </PropertyGroup>
+
+    <!-- DebugAppFolder configuration for output to Program Files -->
+    <PropertyGroup Condition="'$(Configuration)' == 'DebugUnigetFolder'">
+      <DebugType>portable</DebugType>
+      <DebugSymbols>true</DebugSymbols>
+      <PublishSingleFile>false</PublishSingleFile>
+      <PublishTrimmed>false</PublishTrimmed>
+      <PublishAot>false</PublishAot>
+      <Optimize>false</Optimize>
+      <DefineConstants>DEBUG;$(DefineConstants)</DefineConstants>
+      <OutputPath>C:\Program Files\UniGetUI\Assets\Utilities\</OutputPath>
+      <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+      <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>pdbonly</DebugType>
+    <PublishSingleFile>true</PublishSingleFile>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishAot>true</PublishAot>
     <Optimize>true</Optimize>
     <InvariantGlobalization>true</InvariantGlobalization>
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
     <IlcGenerateStackTraceData>true</IlcGenerateStackTraceData>
-
-    <DefineConstants>$(IntegrityOption)</DefineConstants>
-    
+    <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Security.Extensions" Version="1.4.0" />
     <PackageReference Include="System.Security.Principal.Windows" Version="5.0.0" />
     <PackageReference Include="System.Threading.AccessControl" Version="6.0.0" />
   </ItemGroup>
-    
+
   <ItemGroup>
     <Compile Remove="bin\**" />
     <EmbeddedResource Remove="bin\**" />
     <None Remove="bin\**" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.11">
       <PrivateAssets>all</PrivateAssets>
