@@ -53,20 +53,26 @@ namespace gsudo
             if (!CheckProcessName(clientProcess))
             {
                 Logger.Instance.Log(IntegrityWarnings.UnrecognizedCurrentAssemblyName, LogLevel.Warning);
+#if !DEBUG || !DISABLE_INTEGRITY
                 return false;
+#endif
             }
 
             // Elevated 'gsudoelevate' service should only be started by the UniGetUI Elevator itself
             if (clientProcess.ProcessName != CURRENT_ASSEMBLY_NAME)
             {
                 Logger.Instance.Log(IntegrityWarnings.UnrecognizedClientAssemblyName, LogLevel.Warning);
+#if !DEBUG || !DISABLE_INTEGRITY
                 return false;
+#endif
             }
 
             if (!CheckCallerProcessSignature(clientProcess))
             {
                 Logger.Instance.Log(IntegrityWarnings.UnrecognizedCallerAssemblySignature, LogLevel.Warning);
+#if !DEBUG || !DISABLE_INTEGRITY
                 return false;
+#endif
             }
 
             return true;
@@ -94,7 +100,9 @@ namespace gsudo
                 if (!CheckProcessName(currentProcess))
                 {
                     Logger.Instance.Log(IntegrityWarnings.UnrecognizedCurrentAssemblyName, LogLevel.Warning);
-                    return false;
+#if !DEBUG || !DISABLE_INTEGRITY
+                return false;
+#endif
                 }
 
                 var currentDirectory = Path.GetDirectoryName(currentProcess.MainModule?.FileName);
@@ -102,7 +110,9 @@ namespace gsudo
                 if (!File.Exists(helperDll))
                 {
                     Logger.Instance.Log("W_HELPER_DLL_NOT_FOUND", LogLevel.Warning);
-                    return false;
+#if !DEBUG || !DISABLE_INTEGRITY
+                return false;
+#endif
                 }
 
                 byte[] fileHash;
@@ -114,7 +124,9 @@ namespace gsudo
                 if (fileHashString != "153eefb2eafa8b2b909854cc1f941350efb1170e179a299de8836b8ec5ce6a7a")
                 {
                     Logger.Instance.Log("W_HELPER_DLL_HASH_MISMATCH", LogLevel.Warning);
-                    return false;
+#if !DEBUG || !DISABLE_INTEGRITY
+                return false;
+#endif
                 }
 
                 // We don't want the parent process name to be different from UniGetUI
@@ -125,7 +137,9 @@ namespace gsudo
                 if (!CheckCallerProcessName(parentProcess))
                 {
                     Logger.Instance.Log(IntegrityWarnings.UnrecognizedCallerAssemblyName, LogLevel.Warning);
-                    return false;
+#if !DEBUG || !DISABLE_INTEGRITY
+                return false;
+#endif
                 }
 
                 // Since the check above is easily circumventable, let's check if the caller signature is
@@ -133,7 +147,9 @@ namespace gsudo
                 if (!CheckCallerProcessSignature(parentProcess))
                 {
                     Logger.Instance.Log(IntegrityWarnings.UnrecognizedCallerAssemblySignature, LogLevel.Warning);
-                    return false;
+#if !DEBUG || !DISABLE_INTEGRITY
+                return false;
+#endif
                 }
 
                 return true;

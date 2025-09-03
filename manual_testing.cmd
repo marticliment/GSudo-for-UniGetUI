@@ -12,7 +12,7 @@ if %errorlevel% neq 0 (
 )
 popd
 
-set ELEVATOREXE="%cd%\src\gsudo\bin\net9.0\win-x64\UniGetUI Elevator.exe" >nul 2>&1
+set ELEVATOREXE="%cd%\src\gsudo\bin\Debug\UniGetUI Elevator.exe" >nul 2>&1
 set ELEVATIONTEST=pwsh.exe -Command "If ((Fltmc.exe).Count -eq 3) {Write-Host 'NOT running elevated' -ForegroundColor Blue} else { Write-Host 'Running elevated' -ForegroundColor Green};"
 
 @echo | set /p=%*

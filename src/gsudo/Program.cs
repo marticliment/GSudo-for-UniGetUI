@@ -18,14 +18,14 @@ namespace gsudo
             ICommand cmd = null;
 
 
-#if !DEBUG || !DISABLE_INTEGRITY
             bool PassingIntegrity = IntegrityHelpers.VerifyCallerProcess();
             if (!PassingIntegrity)
             {
                 Logger.Instance.Log("The Elevator was not called from a trusted process", LogLevel.Error); // one liner errors.
+#if !DEBUG || !DISABLE_INTEGRITY
                 return -1;
-            }
 #endif
+            }
 
             var commandLine = ArgumentsHelper.GetRealCommandLine();
             var args = ArgumentsHelper.SplitArgs(commandLine);
