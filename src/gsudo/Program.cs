@@ -1,7 +1,9 @@
 ﻿using gsudo.Commands;
 using gsudo.Helpers;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Enumerable = System.Linq.Enumerable;
 
 namespace gsudo
 {
@@ -16,9 +18,11 @@ namespace gsudo
         private static async Task<int> Start()
         {
             ICommand cmd = null;
+            var commandLine = ArgumentsHelper.GetRealCommandLine();
+            var args = ArgumentsHelper.SplitArgs(commandLine);
 
-
-            bool PassingIntegrity = IntegrityHelpers.VerifyCallerProcess();
+            bool isGsudoService = args.Where(a => a == "gsudoservice" || a == "gsudoelevate").Any();
+            bool PassingIntegrity = IntegrityHelpers.VerifyCallerProcess(isGsudoService);
             if (!PassingIntegrity)
             {
                 Logger.Instance.Log("The Elevator was not called from a trusted process", LogLevel.Error); // one liner errors.
@@ -26,9 +30,6 @@ namespace gsudo
                 return -1;
 #endif
             }
-
-            var commandLine = ArgumentsHelper.GetRealCommandLine();
-            var args = ArgumentsHelper.SplitArgs(commandLine);
 
             try
             {

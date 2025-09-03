@@ -27,20 +27,28 @@ namespace gsudo
         [
             "UniGetUI",
             "WingetUI",
-            "AdminByRequest",
 #if DEBUG
-            "vsdbg-ui"
+            // "cmd",
+            // "vsdbg-ui"
 #endif
+        ];
+        private static readonly string[] RECOGNIZED_CALLER_ASSEMBLY_NAMES_GSUDOSERVICE =
+        [
+            "AdminByRequest",
         ];
 
         private static readonly string[] RECOGNIZED_CALLER_ASSEMBLY_SUBJECTS =
         [
             "CN=Marti Climent Lopez, O=Marti Climent Lopez, L=Barcelona, S=Barcelona, C=ES",
             "CN=\"Open Source Developer, Martí Climent López\", O=Open Source Developer, L=Barcelona, S=Barcelona, C=ES",
-            "CN=Admin By Request ApS, O=Admin By Request ApS, L=Aalborg, C=DK, SERIALNUMBER=31938112, OID.2.5.4.15=Private Organization, OID.1.3.6.1.4.1.311.60.2.1.3=DK",
 #if DEBUG
-            "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+            // "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+            // "CN=Microsoft Windows, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
 #endif
+        ];
+        private static readonly string[] RECOGNIZED_CALLER_ASSEMBLY_SUBJECTS_GSUDOSERVICE =
+        [
+            "CN=Admin By Request ApS, O=Admin By Request ApS, L=Aalborg, C=DK, SERIALNUMBER=31938112, OID.2.5.4.15=Private Organization, OID.1.3.6.1.4.1.311.60.2.1.3=DK",
         ];
 
         /// <summary>
@@ -48,7 +56,7 @@ namespace gsudo
         /// </summary>
         /// <param name="clientProcess"></param>
         /// <returns></returns>
-        public static bool VerifyClientProcess(Process clientProcess)
+        public static bool VerifyClientProcess(Process clientProcess, bool isGsudoService)
         {
             if (!CheckProcessName(clientProcess))
             {
@@ -67,7 +75,7 @@ namespace gsudo
 #endif
             }
 
-            if (!CheckCallerProcessSignature(clientProcess))
+            if (!CheckCallerProcessSignature(clientProcess, isGsudoService))
             {
                 Logger.Instance.Log(IntegrityWarnings.UnrecognizedCallerAssemblySignature, LogLevel.Warning);
 #if !DEBUG || !DISABLE_INTEGRITY
@@ -82,7 +90,7 @@ namespace gsudo
         /// Verifies current process and parent processes
         /// </summary>
         /// <returns></returns>
-        public static bool VerifyCallerProcess()
+        public static bool VerifyCallerProcess(bool isGsudoService)
         {
             try
             {
@@ -134,7 +142,7 @@ namespace gsudo
                 // basic first step.
                 var parentProcess = GetParentProcess();
 
-                if (!CheckCallerProcessName(parentProcess))
+                if (!CheckCallerProcessName(parentProcess, isGsudoService))
                 {
                     Logger.Instance.Log(IntegrityWarnings.UnrecognizedCallerAssemblyName, LogLevel.Warning);
 #if !DEBUG || !DISABLE_INTEGRITY
@@ -144,7 +152,7 @@ namespace gsudo
 
                 // Since the check above is easily circumventable, let's check if the caller signature is
                 // recognized.
-                if (!CheckCallerProcessSignature(parentProcess))
+                if (!CheckCallerProcessSignature(parentProcess, isGsudoService))
                 {
                     Logger.Instance.Log(IntegrityWarnings.UnrecognizedCallerAssemblySignature, LogLevel.Warning);
 #if !DEBUG || !DISABLE_INTEGRITY
@@ -176,7 +184,7 @@ namespace gsudo
         }
 
 
-        private static bool CheckCallerProcessName(Process callerProcess)
+        private static bool CheckCallerProcessName(Process callerProcess, bool isGsudoService)
         {
             if (callerProcess is null)
             {
@@ -184,10 +192,16 @@ namespace gsudo
                 return false;
             }
 
-            return RECOGNIZED_CALLER_ASSEMBLY_NAMES.Contains(callerProcess.ProcessName);
+            bool isValid = RECOGNIZED_CALLER_ASSEMBLY_NAMES.Contains(callerProcess.ProcessName);
+            if (!isValid && isGsudoService)
+            {   // If this is a gsudo service, allow extra caller executables
+                isValid |= RECOGNIZED_CALLER_ASSEMBLY_NAMES_GSUDOSERVICE.Contains(callerProcess.ProcessName);
+            }
+
+            return isValid;
         }
 
-        public static bool CheckCallerProcessSignature(Process callerProcess)
+        public static bool CheckCallerProcessSignature(Process callerProcess, bool isGsudoService)
         {
             if (callerProcess is null)
             {
@@ -204,7 +218,13 @@ namespace gsudo
                     return false;
                 }
 
-                if (!RECOGNIZED_CALLER_ASSEMBLY_SUBJECTS.Contains(sigInfo.SigningCertificate.Subject))
+                bool isValid = RECOGNIZED_CALLER_ASSEMBLY_SUBJECTS.Contains(sigInfo.SigningCertificate.Subject);
+                if (!isValid && isGsudoService)
+                {   // If this is a gsudo service, allow extra caller executables
+                    isValid |= RECOGNIZED_CALLER_ASSEMBLY_SUBJECTS_GSUDOSERVICE.Contains(sigInfo.SigningCertificate.Subject);
+                }
+
+                if (!isValid)
                 {
                     Logger.Instance.Log($"Subject {sigInfo.SigningCertificate.Subject} is not recognized", LogLevel.Error);
                     return false;

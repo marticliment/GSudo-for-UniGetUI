@@ -180,7 +180,8 @@ namespace gsudo.Rpc
                 return true;
             }
 
-            if (!IntegrityHelpers.VerifyClientProcess(clientProcess))
+            // Here, it will always be a server
+            if (!IntegrityHelpers.VerifyClientProcess(clientProcess, isGsudoService: true))
             {
                 Logger.Instance.Log(
                     $"Invalid Client. {clientProcess.GetExeName()} (PID: {clientPid} failed its integrity check",
