@@ -16,7 +16,7 @@ namespace gsudo.Helpers
 {
     public static class ProcessFactory
     {
-        public static Process StartElevatedDetached(string filename, string arguments, bool hidden)
+        public static void StartElevatedDetached(string filename, string arguments, bool hidden)
         {
             Logger.Instance.Log($"Elevating process: {filename} {arguments}", LogLevel.Debug);
 
@@ -43,7 +43,10 @@ namespace gsudo.Helpers
 
                 throw;
             }
-            return process;
+            catch (Exception ex)
+            {
+                Logger.Instance.Log($"Failed to get a handle from the elevated process directly: {ex.Message}", LogLevel.Warning);
+            }
         }
 
         public static Process StartRedirected(string fileName, string arguments, string startFolder)
@@ -220,7 +223,7 @@ namespace gsudo.Helpers
         /// </summary>
         public static SafeProcessHandle StartAttachedWithIntegrity(IntegrityLevel integrityLevel, string appToRun, string args, string startupFolder, bool newWindow, bool hidden)
         {
-            // must return a process Handle because we cant create a Process() from a handle and get the exit code. 
+            // must return a process Handle because we cant create a Process() from a handle and get the exit code.
             Logger.Instance.Log($"{nameof(StartAttachedWithIntegrity)}: {appToRun} {args}", LogLevel.Debug);
             int currentIntegrity = SecurityHelper.GetCurrentIntegrityLevel();
             SafeTokenHandle newToken;
@@ -365,4 +368,3 @@ namespace gsudo.Helpers
 
     }
 }
-

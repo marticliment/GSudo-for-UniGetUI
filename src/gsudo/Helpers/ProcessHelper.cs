@@ -72,7 +72,7 @@ namespace gsudo.Helpers
             if (ShellHelper.InvokingShell.In(Shell.Bash, Shell.BusyBox))
             {
                 var parentId = GetParentProcessId(process);
-                if (parentId == 0) 
+                if (parentId == 0)
                     return process.Id;
 
                 try
@@ -82,7 +82,7 @@ namespace gsudo.Helpers
                     if (parentProcessFileName.In("BASH", "ASH", "SH", "BUSYBOX", "BUSYBOX64"))
                     {
                         var grandparentFileName = System.IO.Path.GetFileNameWithoutExtension(GetParentProcess(parentProcess).MainModule.FileName);
-                        if (!grandparentFileName.Equals(parentProcessFileName, StringComparison.OrdinalIgnoreCase)) 
+                        if (!grandparentFileName.Equals(parentProcessFileName, StringComparison.OrdinalIgnoreCase))
                         {
                             return parentId;
                         }
@@ -118,7 +118,7 @@ namespace gsudo.Helpers
                 }
                 p = null;
             }
-        
+
             return pid;
         }
 
@@ -228,6 +228,16 @@ namespace gsudo.Helpers
             };
 
         public static SafeProcessHandle GetSafeProcessHandle(this Process p) => new SafeProcessHandle(p.Handle, true);
+
+        public static SafeProcessHandle QuerySafeProcessHandle(this Process p)
+        {
+            var desiredAccess = PROCESS_QUERY_INFORMATION | SYNCHRONIZE;
+            var handle = OpenProcess(desiredAccess, false, (uint)p.Id);
+
+            if (handle == IntPtr.Zero) return null;
+
+            return new SafeProcessHandle(handle, ownsHandle: true);
+        }
 
         public static AutoResetEvent GetProcessWaitHandle(this SafeProcessHandle processHandle) =>
             new AutoResetEvent(false)

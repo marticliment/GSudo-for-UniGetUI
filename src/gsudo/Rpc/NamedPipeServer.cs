@@ -75,8 +75,8 @@ namespace gsudo.Rpc
             var networkSid = new SecurityIdentifier("S-1-5-2");
             // deny remote connections.
             ps.AddAccessRule(new PipeAccessRule(
-                networkSid, 
-                PipeAccessRights.FullControl, 
+                networkSid,
+                PipeAccessRights.FullControl,
                 System.Security.AccessControl.AccessControlType.Deny));
 
             bool isHighIntegrity = SecurityHelper.IsHighIntegrity();
@@ -179,7 +179,17 @@ namespace gsudo.Rpc
                 // not much to protect.
                 return true;
             }
-            
+
+            // Here, it will always be a server
+            if (!IntegrityHelpers.VerifyClientProcess(clientProcess, isGsudoService: true))
+            {
+                Logger.Instance.Log(
+                    $"Invalid Client. {clientProcess.GetExeName()} (PID: {clientPid} failed its integrity check",
+                    LogLevel.Error);
+
+                return false;
+            }
+
             clientProcessMainModule = clientProcess.MainModule;
 
             if (_allowedExeLength != -1)
@@ -199,12 +209,12 @@ namespace gsudo.Rpc
                         LogLevel.Error);
                     return false;
                 }
-            }            
+            }
 #if !DEBUG
-            if (clientProcessMainModule != null) 
+            if (clientProcessMainModule != null)
             {
                 // Check if a malicious process is attached to the client. Results are only valid if we are elevated and the malicious process is not.
-                // But still a futile attempt since the user can Attach, 
+                // But still a futile attempt since the user can Attach,
 
                 bool isDebuggerAttached = false;
                 if (!Native.ProcessApi.CheckRemoteDebuggerPresent(clientProcess.SafeHandle, ref isDebuggerAttached) || isDebuggerAttached)
@@ -220,7 +230,7 @@ namespace gsudo.Rpc
             // TODO: Decide if I want to allow all children and grandsons, or only direct children.
             // It's trivial on Windows to fake a your parent PID.
             // So this "security" check is easily avoidable for advanced hackers.
-            
+
             // Only allow direct child.
             /*
             clientPid = ProcessHelper.GetParentProcessIdExcludingShim(clientPid);

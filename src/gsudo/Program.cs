@@ -1,7 +1,9 @@
 ﻿using gsudo.Commands;
 using gsudo.Helpers;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Enumerable = System.Linq.Enumerable;
 
 namespace gsudo
 {
@@ -16,25 +18,33 @@ namespace gsudo
         private static async Task<int> Start()
         {
             ICommand cmd = null;
+            var commandLine = ArgumentsHelper.GetRealCommandLine();
+            var args = ArgumentsHelper.SplitArgs(commandLine);
 
-
-#if !DEBUG || !DISABLE_INTEGRITY
-            bool PassingIntegrity = IntegrityHelpers.VerifyCallerProcess();
+            bool isGsudoService = args.Where(a => a == "gsudoservice" || a == "gsudoelevate").Any();
+            bool PassingIntegrity = IntegrityHelpers.VerifyCallerProcess(isGsudoService);
             if (!PassingIntegrity)
             {
                 Logger.Instance.Log("The Elevator was not called from a trusted process", LogLevel.Error); // one liner errors.
+#if !DEBUG || !DISABLE_INTEGRITY
                 return -1;
-            }
 #endif
-
-            var commandLine = ArgumentsHelper.GetRealCommandLine();
-            var args = ArgumentsHelper.SplitArgs(commandLine);
+            }
 
             try
             {
                 try
                 {
                     cmd = new CommandLineParser(args).Parse();
+#if DEBUG
+                    if (cmd is ServiceCommand)
+                    {
+                        // Allow debug messages if the debug build is installed
+                        // The official UniGet UI.exe does not set the --debug flag
+                        Settings.LogLevel.Value = LogLevel.All;
+                        InputArguments.Debug = true;
+                    }
+#endif
                 }
                 finally
                 {
