@@ -120,7 +120,7 @@ namespace gsudo.Helpers
             return null;
         }
 
-        internal static SafeProcessHandle StartService(int? allowedPid, TimeSpan? cacheDuration = null, string allowedSid = null, bool singleUse = false)
+        internal static void StartService(int? allowedPid, TimeSpan? cacheDuration = null, string allowedSid = null, bool singleUse = false)
         {
             var currentSid = WindowsIdentity.GetCurrent().User.Value;
 
@@ -152,11 +152,10 @@ namespace gsudo.Helpers
             }
 
             bool isAdmin = SecurityHelper.IsHighIntegrity();
-
             string commandLine = $"{@params}{verb} {allowedPid} {allowedSid} {Settings.LogLevel} {Settings.TimeSpanWithInfiniteToString(cacheDuration.Value)}";
-
             string ownExe = ProcessHelper.GetOwnExeName();
-            if (InputArguments.TrustedInstaller && isAdmin && !WindowsIdentity.GetCurrent().Claims.Any(c => c.Value == Constants.TI_SID))
+
+            /*if (InputArguments.TrustedInstaller && isAdmin && !WindowsIdentity.GetCurrent().Claims.Any(c => c.Value == Constants.TI_SID))
             {
                 StartTrustedInstallerService(commandLine, allowedPid.Value);
                 ret = null;
@@ -187,18 +186,18 @@ namespace gsudo.Helpers
                 else
                 {
                     if (SecurityHelper.IsMemberOfLocalAdmins() && InputArguments.IntegrityLevel >= IntegrityLevel.High)
-                        ret = ProcessFactory.StartElevatedDetached(ownExe, commandLine, !InputArguments.Debug);
+                        ProcessFactory.StartElevatedDetached(ownExe, commandLine, !InputArguments.Debug);
                     else
                         ret = ProcessFactory.StartDetached(ownExe, commandLine, null, !InputArguments.Debug).GetSafeProcessHandle();
                 }
             }
             else
             {
-                ret = ProcessFactory.StartElevatedDetached(ownExe, commandLine, !InputArguments.Debug);
-            }
+                ProcessFactory.StartElevatedDetached(ownExe, commandLine, !InputArguments.Debug);
+            }*/
 
+            ProcessFactory.StartElevatedDetached(ownExe, commandLine, !InputArguments.Debug);
             Logger.Instance.Log("Service process started.", LogLevel.Debug);
-            return ret;
         }
 
         private static void StartTrustedInstallerService(string commandLine, int pid)

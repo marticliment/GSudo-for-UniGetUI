@@ -16,7 +16,7 @@ namespace gsudo.Helpers
 {
     public static class ProcessFactory
     {
-        public static SafeProcessHandle StartElevatedDetached(string filename, string arguments, bool hidden)
+        public static void StartElevatedDetached(string filename, string arguments, bool hidden)
         {
             Logger.Instance.Log($"Elevating process: {filename} {arguments}", LogLevel.Debug);
 
@@ -35,7 +35,6 @@ namespace gsudo.Helpers
             try
             {
                 process.Start();
-                return process.GetSafeProcessHandle();
             }
             catch (Win32Exception ex)
             {
@@ -48,18 +47,6 @@ namespace gsudo.Helpers
             {
                 Logger.Instance.Log($"Failed to get a handle from the elevated process directly: {ex.Message}", LogLevel.Warning);
             }
-
-            // See if we can compensate for the exception:
-            // Find elevated process by name and exclude our own instance.
-            string exeName = Path.GetFileNameWithoutExtension(filename);
-            var elevated = Process.GetProcessesByName(exeName).SingleOrDefault(candidate => candidate.Id != Environment.ProcessId);
-
-            if (elevated is null)
-            {
-                Logger.Instance.Log($"Could not find the elevated '{exeName}' process or acquire a safe handle", LogLevel.Warning);
-            }
-
-            return elevated?.QuerySafeProcessHandle();
         }
 
         public static Process StartRedirected(string fileName, string arguments, string startFolder)

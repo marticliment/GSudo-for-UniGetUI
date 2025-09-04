@@ -116,7 +116,7 @@ namespace gsudo.Commands
                 var serviceLocation = await ServiceHelper.FindAnyServiceFast().ConfigureAwait(false);
                 if (serviceLocation == null)
                 {
-                    var serviceHandle = ServiceHelper.StartService(callingPid, singleUse: InputArguments.KillCache);
+                    ServiceHelper.StartService(callingPid, singleUse: InputArguments.KillCache);
                     serviceLocation = await ServiceHelper.WaitForNewService(callingPid).ConfigureAwait(false);
                 }
 
